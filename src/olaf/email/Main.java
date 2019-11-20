@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +18,12 @@ public class Main
         {
             String input = Files.readString(filePath);
             HashMap<String, Integer> domainMap = buildMap(input);
-            displayAll(domainMap);
+//            displayAll(domainMap);
+            displayTop(domainMap,10);
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter minimum number of occurrences:");
+            Integer threshold = scanner.nextInt();
+            displayAbove(domainMap, threshold);
         }
         catch (IOException e)
         {
@@ -44,10 +49,24 @@ public class Main
     }
 
     static void displayAll(HashMap<String, Integer> domainMap) {
+        System.out.println("All domains:");
         for (String domain : domainMap.keySet()) {
             System.out.println("domain " + domain + " occurs " + domainMap.get(domain) + " times.");
         }
     }
 
-}
+    static void displayTop(HashMap<String, Integer> domainMap, Integer number) {
+        System.out.println("Top " + number + " domains:");
+        domainMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(number)
+                .forEach(entry -> System.out.println("domain "+ entry.getKey() + " occurs " + entry.getValue() + " times."));
+    }
 
+    private static void displayAbove(HashMap<String, Integer> domainMap, Integer threshold) {
+        System.out.println("All domains with " + threshold + " or more:");
+        for (String domain : domainMap.keySet()) {
+            if (domainMap.get(domain) >= threshold) System.out.println("domain " + domain + " occurs " + domainMap.get(domain) + " times.");
+        }
+    }
+}
