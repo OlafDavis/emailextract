@@ -13,13 +13,18 @@ public class Main
     public static void main(String[] args)
     {
         Path filePath = Paths.get("sample.txt");
+        Boolean isDomains = true;
 
         try
         {
             String input = Files.readString(filePath);
-            HashMap<String, Integer> domainMap = buildMap(input);
-//            displayAll(domainMap);
-            displayTop(domainMap,10);
+            Pattern pattern = isDomains
+                    ? Pattern.compile("(\\s|^)[\\w.'%+-]+@([\\w'%+-]+\\.[\\w.'%+-]+)(\\s|$)")
+                    : Pattern.compile("(\\s|^)[\\w.'%+-]+@([\\w'%+-]+)\\.[\\w.'%+-]+(\\s|$)");
+            Matcher matcher = pattern.matcher(input);
+            HashMap<String, Integer> domainMap = buildMap(input, matcher);
+            displayAll(domainMap);
+//            displayTop(domainMap,10);
             Scanner scanner = new Scanner(System.in);
             System.out.println("Enter minimum number of occurrences:");
             Integer threshold = scanner.nextInt();
@@ -31,9 +36,7 @@ public class Main
         }
     }
 
-    static HashMap<String, Integer> buildMap(String input) {
-        Pattern pattern = Pattern.compile("(\\s|^)[\\w.'%+-]+@([\\w'%+-]+\\.[\\w.'%+-]+)(\\s|$)");
-        Matcher matcher = pattern.matcher(input);
+    static HashMap<String, Integer> buildMap(String input, Matcher matcher) {
         HashMap<String, Integer> domainMap = new HashMap<String, Integer>();
         if (matcher.find()) {
             do {
